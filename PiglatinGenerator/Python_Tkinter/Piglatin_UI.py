@@ -68,6 +68,10 @@ class GUIOutput(Frame):
 
         translate = Button(buttonsFrame, text = "Translate", command = lambda: self.translate(varToTranslate, varTranslated))
         translate.pack(side = LEFT, padx=10)
+
+        #Disable it so that the text cannot be changed
+        text_piglatinsentence.config(state=DISABLED)
+        
         quitpiglatin = Button(buttonsFrame, text = "Quit",  command = self.quitCallBack)
         quitpiglatin.pack(side=RIGHT, padx=10)
         #function pointer
@@ -77,6 +81,8 @@ class GUIOutput(Frame):
         #populate text box
         piglatinObject = Piglatin.PigLatinTranslate()
         piglatinsentence.set(piglatinObject.piglatinTranslateSentence(sentencetotranslate.get()))
+        
+        
 
     def quitCallBack(self):
         self.master.quit()
