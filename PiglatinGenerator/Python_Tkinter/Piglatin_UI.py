@@ -68,7 +68,7 @@ class GUIOutput(Frame):
 
         translate = Button(buttonsFrame, text = "Translate", command = lambda: self.translate(varToTranslate, varTranslated))
         translate.pack(side = LEFT, padx=10)
-        quitpiglatin = Button(buttonsFrame, text = "Quit",  command = self.master.quit)
+        quitpiglatin = Button(buttonsFrame, text = "Quit",  command = self.quitCallBack)
         quitpiglatin.pack(side=RIGHT, padx=10)
         #function pointer
         
@@ -78,9 +78,9 @@ class GUIOutput(Frame):
         piglatinObject = Piglatin.PigLatinTranslate()
         piglatinsentence.set(piglatinObject.piglatinTranslateSentence(sentencetotranslate.get()))
 
-    def quitCallBack(self, buttonsFrame):
-        buttonsFrame.quit()
-        buttonsFrame.destroy()
+    def quitCallBack(self):
+        self.master.quit()
+        self.master.destroy()
 
 
 
