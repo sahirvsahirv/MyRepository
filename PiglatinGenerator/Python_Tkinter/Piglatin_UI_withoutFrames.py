@@ -63,24 +63,21 @@ class GUIOutput(Frame):
         text_piglatinsentence = Entry(piglatinFrame, textvariable=varTranslated)
         text_piglatinsentence.pack(fill=X, padx=5, expand=True)
         
-        buttonsFrame = Frame(self)
-        buttonsFrame.pack(fill = X)
-
-        translate = Button(buttonsFrame, text = "Translate", command = lambda: self.translate(varToTranslate, varTranslated))
-        translate.pack(side = LEFT, padx=10)
-        quitpiglatin = Button(buttonsFrame, text = "Quit",  command = self.master.quit)
-        quitpiglatin.pack(side=RIGHT, padx=10)
+        quitpiglatin = Button(frame(self, LEFT), text = "Quit",  command = self.quitCallBack())
         #function pointer
-        
+        translate = Button(frame(self, LEFT), text = "Translate", command = lambda: self.translate(varToTranslate, varTranslated))
+        quitpiglatin.pack()
+        translate.pack()
+
         
     def translate(self, sentencetotranslate, piglatinsentence  ):
         #populate text box
         piglatinObject = Piglatin.PigLatinTranslate()
         piglatinsentence.set(piglatinObject.piglatinTranslateSentence(sentencetotranslate.get()))
 
-    def quitCallBack(self, buttonsFrame):
-        buttonsFrame.quit()
-        buttonsFrame.destroy()
+    def quitCallBack():
+        frame.quit()
+        frame.destroy()
 
 
 
