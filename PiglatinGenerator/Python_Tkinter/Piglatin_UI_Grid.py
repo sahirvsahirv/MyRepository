@@ -45,31 +45,32 @@ class GUIOutput(Frame):
         #If you want to make the widgets as wide as the parent widget, you have to use the fill=X option: 
         lengText = Label(self.master, text="English Text")
         #Size of the label is 5 vertically - y and horizontally - x
-        lengText.grid(row=0, column=0)
+        lengText.grid(row=0, column=0,  sticky = E)
         
         
         
         varToTranslate =  StringVar()
         text_sentencetotranslate = Entry(self.master, textvariable=varToTranslate) #Enter the translated text
-        text_sentencetotranslate.grid(row=0, column=1)
+        text_sentencetotranslate.grid(row=0, column=1,  sticky = E)
         
         lpiglatinText = Label(self.master, text="Translated Text")
-        lpiglatinText.grid(row=1, column=0)
+        #sticky - expand the widget if the text is larger than widget
+        lpiglatinText.grid(row=1, column=0, sticky=E)
 
 
         varTranslated =  StringVar()
         text_piglatinsentence = Entry(self.master, textvariable=varTranslated)
-        text_piglatinsentence.grid(row=1, column=1)
+        text_piglatinsentence.grid(row=1, column=1, sticky = E)
         
         
         translate = Button(self.master, text = "Translate", command = lambda: self.translate(varToTranslate, varTranslated))
-        translate.grid(row=2, column=0)
+        translate.grid(row=2, columnspan= 2, sticky = E)
 
         #Disable it so that the text cannot be changed
         text_piglatinsentence.config(state=DISABLED)
         
         quitpiglatin = Button(self.master, text = "Quit",  command = self.quitCallBack)
-        quitpiglatin.grid(row=2, column=1)
+        quitpiglatin.grid(row=2, column=4, columnspan=4,  sticky = E)
         #function pointer
         
         
