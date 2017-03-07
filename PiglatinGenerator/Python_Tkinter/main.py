@@ -1,5 +1,6 @@
 import Piglatin
-import Piglatin_UI
+#import Piglatin_UI
+import Piglatin_UI_withoutFrames
 from tkinter import *
 
 if False:
@@ -8,4 +9,5 @@ if False:
     
 else:
     #GUI
-    Piglatin_UI.GUIOutput().mainloop()
+    #Piglatin_UI.GUIOutput().mainloop()
+    Piglatin_UI_withoutFrames.GUIOutput().mainloop()

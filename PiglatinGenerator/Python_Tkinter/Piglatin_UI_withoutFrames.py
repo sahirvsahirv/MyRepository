@@ -28,46 +28,60 @@ class ConsoleOutput:
 
 from tkinter import *
 
+#Creates a new frame everytime and does not give the flexibility to use different
+#parameter options
+##def frame(root, side):
+##    w = Frame(root)
+##    w.pack(side = side, expand = YES, fill = BOTH)
+##    return w
 
-def frame(root, side):
-    w = Frame(root)
-    w.pack(side = side, expand = YES, fill = BOTH)
-    return w
+#myvar.trace - Debug and print
+
 
 
 class GUIOutput(Frame):
     def __init__(self):
         #inherited from frame
         Frame.__init__(self)
-
+        
         self.pack(expand =  YES, fill = BOTH)
         self.master.title('Piglatin Generator')
 
-        engFrame = Frame(self)
-        engFrame.pack(fill = X)
-        lengText = Label(engFrame, text="English Text")        
+        #Using the same frame all through out and the window expands horizontally
+        piglatinFrame = Frame(self)
+        piglatinFrame.pack(fill = X)
+        lengText = Label(piglatinFrame, text="English Text")        
         lengText.pack(side=LEFT, padx=5, pady=5)
         
-        
+        #Removing the neccessity of lambda function, by making the text boxes a member variable
         varToTranslate =  StringVar()
-        text_sentencetotranslate = Entry(engFrame, textvariable=varToTranslate) #Enter the translated text
-        text_sentencetotranslate.pack(fill=X, padx=5, expand=True)
+        text_sentencetotranslate = Entry(piglatinFrame, textvariable=varToTranslate) #Enter the translated text
+        text_sentencetotranslate.pack(side=LEFT, padx=5, expand=True)
+
         
-        piglatinFrame = Frame(self)
-        piglatinFrame.pack(fill = X) #else take it in the old frame's place and not visible
+        #piglatinFrame = Frame(self)
+        #piglatinFrame.pack(fill = X) #else take it in the old frame's place and not visible
         lpiglatinText = Label(piglatinFrame, text="Translated Text")
         lpiglatinText.pack(side=LEFT, padx=5, pady=5)
 
 
         varTranslated =  StringVar()
         text_piglatinsentence = Entry(piglatinFrame, textvariable=varTranslated)
-        text_piglatinsentence.pack(fill=X, padx=5, expand=True)
+        text_piglatinsentence.pack(side=LEFT, padx=5, expand=True)
         
-        quitpiglatin = Button(frame(self, LEFT), text = "Quit",  command = self.quitCallBack())
+        
         #function pointer
-        translate = Button(frame(self, LEFT), text = "Translate", command = lambda: self.translate(varToTranslate, varTranslated))
-        quitpiglatin.pack()
-        translate.pack()
+        #Removing the neccessity of lambda function, by making the text boxes a member variable
+        translate = Button(piglatinFrame, text = "Translate", command = lambda: self.translate(varToTranslate, varTranslated))
+        translate.pack(side=LEFT, padx=10)
+        #Disable it so that the text cannot be changed
+        text_piglatinsentence.config(state=DISABLED)
+
+        
+        
+        quitpiglatin = Button(piglatinFrame, text = "Quit",  command = self.quitCallBack)
+        quitpiglatin.pack(side=LEFT, padx=10)
+        
 
         
     def translate(self, sentencetotranslate, piglatinsentence  ):
@@ -75,9 +89,10 @@ class GUIOutput(Frame):
         piglatinObject = Piglatin.PigLatinTranslate()
         piglatinsentence.set(piglatinObject.piglatinTranslateSentence(sentencetotranslate.get()))
 
-    def quitCallBack():
-        frame.quit()
-        frame.destroy()
+
+    def quitCallBack(self):
+        self.master.quit()
+        self.master.destroy()
 
 
 
