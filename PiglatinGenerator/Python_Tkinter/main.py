@@ -1,18 +1,25 @@
 import Piglatin
 #import Piglatin_UI
 #import Piglatin_UI_withoutFrames
-import Piglatin_UI_withoutLambda
+#import Piglatin_UI_withoutLambda
+import Piglatin_UI_Geometry
 
 from tkinter import *
 
-##if False:
-##    #console
-##    consoleObject = Piglatin_UI.ConsoleOutput()
-##    
-##else:
+#Shows all GUI's one by one
+if False:
+    #console
+    consoleObject = Piglatin_UI.ConsoleOutput()
+    
+else:
     #GUI
+
+    #Packing positioning relative to each other
+    
     #Piglatin_UI.GUIOutput().mainloop()
     #Piglatin_UI_withoutFrames.GUIOutput().mainloop()
-
+    Piglatin_UI_Geometry.GUIOutput().mainloop()
+    
     #Only UI - without a class - to eliminate lambda
-    #should run automatically through import
+    #should run automatically through import - comment out everything for this case
+    

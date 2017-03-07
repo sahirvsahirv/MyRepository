@@ -29,19 +29,12 @@ class ConsoleOutput:
 from tkinter import *
 
 
-def frame(root, side):
-    w = Frame(root)
-    w.pack(side = side, expand = YES, fill = BOTH)
-    return w
-
-
 class GUIOutput(Frame):
     def __init__(self):
         #inherited from frame
         Frame.__init__(self)
 
-        
-        self.pack(expand =  YES, fill = BOTH)
+        self.geometry("170200+30+30")
         self.master.title('Piglatin Generator')
 
         engFrame = Frame(self)
@@ -49,7 +42,7 @@ class GUIOutput(Frame):
         engFrame.pack(fill = X)
         lengText = Label(engFrame, text="English Text")
         #Size of the label is 5 vertically - y and horizontally - x
-        lengText.pack(side=LEFT, padx=15, pady=5)
+        lengText.place(x=20, y=30 + 30, width=120, height=25)
         
         
         varToTranslate =  StringVar()

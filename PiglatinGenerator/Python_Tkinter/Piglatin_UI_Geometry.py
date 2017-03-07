@@ -27,56 +27,44 @@ class ConsoleOutput:
             print(piglatinObject.frquencyAnalysis())
 
 from tkinter import *
-
-
-def frame(root, side):
-    w = Frame(root)
-    w.pack(side = side, expand = YES, fill = BOTH)
-    return w
-
+import random
 
 class GUIOutput(Frame):
     def __init__(self):
         #inherited from frame
-        Frame.__init__(self)
-
-        
-        self.pack(expand =  YES, fill = BOTH)
+        frame = Frame.__init__(self)
+        #Width*height + x_offset + y_offset - formatted string
+        self.master.geometry("400x200+30+30")
         self.master.title('Piglatin Generator')
 
-        engFrame = Frame(self)
         #If you want to make the widgets as wide as the parent widget, you have to use the fill=X option: 
-        engFrame.pack(fill = X)
-        lengText = Label(engFrame, text="English Text")
+        lengText = Label(frame, text="English Text")
         #Size of the label is 5 vertically - y and horizontally - x
-        lengText.pack(side=LEFT, padx=15, pady=5)
+        lengText.place(x=50, y=30, width=120, height=25)
         
         
         varToTranslate =  StringVar()
-        text_sentencetotranslate = Entry(engFrame, textvariable=varToTranslate) #Enter the translated text
-        text_sentencetotranslate.pack(fill=X, padx=5, expand=True)
+        text_sentencetotranslate = Entry(frame, textvariable=varToTranslate) #Enter the translated text
+        text_sentencetotranslate.place(x=50 + 100 + 50, y=30, width=120, height=25)
         
-        piglatinFrame = Frame(self)
-        piglatinFrame.pack(fill = X) #else take it in the old frame's place and not visible
-        lpiglatinText = Label(piglatinFrame, text="Translated Text")
-        lpiglatinText.pack(side=LEFT, padx=5, pady=5)
+        lpiglatinText = Label(frame, text="Translated Text")
+        lpiglatinText.place(x=50, y=30 + 30 + 30, width=120, height=25)
 
 
         varTranslated =  StringVar()
-        text_piglatinsentence = Entry(piglatinFrame, textvariable=varTranslated)
-        text_piglatinsentence.pack(fill=X, padx=5, expand=True)
+        text_piglatinsentence = Entry(frame, textvariable=varTranslated)
+        text_piglatinsentence.place(x=50 + 100 + 50, y=30 + 30 + 30, width=120, height=25)
         
-        buttonsFrame = Frame(self)
-        buttonsFrame.pack(fill = X)
+        
 
-        translate = Button(buttonsFrame, text = "Translate", command = lambda: self.translate(varToTranslate, varTranslated))
-        translate.pack(side = LEFT, padx=10)
+        translate = Button(frame, text = "Translate", command = lambda: self.translate(varToTranslate, varTranslated))
+        translate.place(x=50, y=30*5, width=120, height=25)
 
         #Disable it so that the text cannot be changed
         text_piglatinsentence.config(state=DISABLED)
         
-        quitpiglatin = Button(buttonsFrame, text = "Quit",  command = self.quitCallBack)
-        quitpiglatin.pack(side=RIGHT, padx=15)
+        quitpiglatin = Button(frame, text = "Quit",  command = self.quitCallBack)
+        quitpiglatin.place(x=200, y=30*5, width=120, height=25)
         #function pointer
         
         
