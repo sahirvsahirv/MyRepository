@@ -29,47 +29,47 @@ class ConsoleOutput:
 from tkinter import *
 
 
+#Using the grid manager means that you create a widget,
+#and use the grid method to tell the manager in which row
+#and column to place them. The size of the grid doesn't have
+#to be defined, because the manager automatically determines
+#the best dimensions for the widgets used.
+
 class GUIOutput(Frame):
     def __init__(self):
         #inherited from frame
         Frame.__init__(self)
 
-        self.geometry("170200+30+30")
         self.master.title('Piglatin Generator')
 
-        engFrame = Frame(self)
         #If you want to make the widgets as wide as the parent widget, you have to use the fill=X option: 
-        engFrame.pack(fill = X)
-        lengText = Label(engFrame, text="English Text")
+        lengText = Label(self.master, text="English Text")
         #Size of the label is 5 vertically - y and horizontally - x
-        lengText.place(x=20, y=30 + 30, width=120, height=25)
+        lengText.grid(row=0, column=0)
+        
         
         
         varToTranslate =  StringVar()
-        text_sentencetotranslate = Entry(engFrame, textvariable=varToTranslate) #Enter the translated text
-        text_sentencetotranslate.pack(fill=X, padx=5, expand=True)
+        text_sentencetotranslate = Entry(self.master, textvariable=varToTranslate) #Enter the translated text
+        text_sentencetotranslate.grid(row=0, column=1)
         
-        piglatinFrame = Frame(self)
-        piglatinFrame.pack(fill = X) #else take it in the old frame's place and not visible
-        lpiglatinText = Label(piglatinFrame, text="Translated Text")
-        lpiglatinText.pack(side=LEFT, padx=5, pady=5)
+        lpiglatinText = Label(self.master, text="Translated Text")
+        lpiglatinText.grid(row=1, column=0)
 
 
         varTranslated =  StringVar()
-        text_piglatinsentence = Entry(piglatinFrame, textvariable=varTranslated)
-        text_piglatinsentence.pack(fill=X, padx=5, expand=True)
+        text_piglatinsentence = Entry(self.master, textvariable=varTranslated)
+        text_piglatinsentence.grid(row=1, column=1)
         
-        buttonsFrame = Frame(self)
-        buttonsFrame.pack(fill = X)
-
-        translate = Button(buttonsFrame, text = "Translate", command = lambda: self.translate(varToTranslate, varTranslated))
-        translate.pack(side = LEFT, padx=10)
+        
+        translate = Button(self.master, text = "Translate", command = lambda: self.translate(varToTranslate, varTranslated))
+        translate.grid(row=2, column=0)
 
         #Disable it so that the text cannot be changed
         text_piglatinsentence.config(state=DISABLED)
         
-        quitpiglatin = Button(buttonsFrame, text = "Quit",  command = self.quitCallBack)
-        quitpiglatin.pack(side=RIGHT, padx=15)
+        quitpiglatin = Button(self.master, text = "Quit",  command = self.quitCallBack)
+        quitpiglatin.grid(row=2, column=1)
         #function pointer
         
         
