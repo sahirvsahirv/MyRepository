@@ -1,0 +1,73 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2017-03-08 11:31+0530\n"
+"PO-Revision-Date: 2017-03-08 11:37+0530\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: hi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"X-Generator: Poedit 1.8.12\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-SearchPath-0: Piglatin_UI_Internationalized.py\n"
+
+# नमस्ते
+#: Piglatin_UI_Internationalized.py:14 Piglatin_UI_Internationalized.py:40
+msgid "hello"
+msgstr "हैलो"
+
+#: Piglatin_UI_Internationalized.py:15
+msgid "how are you?"
+msgstr "तुम्हारा क्या हाल है?"
+
+#: Piglatin_UI_Internationalized.py:41
+msgid "testing with hello == "
+msgstr "नमस्ते के साथ परीक्षण = ="
+
+#: Piglatin_UI_Internationalized.py:43
+msgid "sentence translation"
+msgstr "वाक्य अनुवाद"
+
+#: Piglatin_UI_Internationalized.py:44
+msgid "i am gowri and you are you"
+msgstr "मैं gowri हूँ और तुम कर रहे हैं आप"
+
+#: Piglatin_UI_Internationalized.py:46 Piglatin_UI_Internationalized.py:61
+msgid "frequency analysis"
+msgstr "आवृत्ति विश्लेषण"
+
+#: Piglatin_UI_Internationalized.py:55
+msgid "Enter text - a word: "
+msgstr "टेक्स्ट यहां लिखें"
+
+#: Piglatin_UI_Internationalized.py:58
+msgid "Enter text - a sentence: "
+msgstr "कृपया टेक्‍स्‍ट दर्ज करें।"
+
+#: Piglatin_UI_Internationalized.py:59
+msgid "translated text = "
+msgstr "अनुवादित पाठ ="
+
+#: Piglatin_UI_Internationalized.py:80
+msgid "Piglatin Generator"
+msgstr "Piglatin जनरेटर"
+
+#: Piglatin_UI_Internationalized.py:83
+msgid "English Text"
+msgstr "अंग्रेजी पाठ"
+
+#: Piglatin_UI_Internationalized.py:103
+msgid "Translate"
+msgstr "अनुवाद करना"
+
+#: Piglatin_UI_Internationalized.py:109
+msgid "Quit"
+msgstr "छोड़ना"

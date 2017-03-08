@@ -4,8 +4,13 @@ import Piglatin
 #import Piglatin_UI_withoutLambda
 #import Piglatin_UI_Geometry
 import Piglatin_UI_Grid
+import Piglatin_UI_Internationalized
+import gettext
+import wstring
 
 from tkinter import *
+
+gettext.install('Piglatin_UI_Grid', '/locale', unicode=1)
 
 #Shows all GUI's one by one
 if False:
