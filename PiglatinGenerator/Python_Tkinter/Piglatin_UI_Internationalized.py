@@ -4,18 +4,18 @@ import os
 import locale
 
 #Returns unicode string automatically in Python 3
-from gettext import gettext as _
+#from gettext import gettext as _
 import gettext
 
 #Ideally you have VM's for each locale and connect remotely to those machines to
 #test the code
 import config
 
-print(_('hello'))
-print(_('how are you?'))
+#print(_('hello'))
+#print(_('how are you?'))
 
 
-locale_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'locale')
+locale_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'locale\\')
 current_locale, encoding = locale.getdefaultlocale()
 print(locale_dir)
 #gettext.install(domain, localedir=None, codeset=None, names=None)
@@ -24,8 +24,19 @@ print(locale_dir)
 #gettext.textdomain('Piglatin_UI_Internationalized')
 # Set up message catalog access
 
-#translation file as the first parameter
-t = gettext.translation('piglatin', localedir=locale_dir, languages=['Hindi'])
+#translation file as the first parameter , mo file -GNU
+#gettext.bindtextdomain('hi', locale_dir)
+#gettext.textdomain('hi')
+#_ = gettext.gettext
+
+#print(_('hello'))
+#print(_('how are you?'))
+
+os.environ.setdefault('LANG', 'af')
+
+#class based api
+#t = gettext.find('hi', locale=locale_dir)
+t = gettext.translation('Piglatin_UI_Internationalized', locale_dir)
 t.install()
 _ = t.gettext
 

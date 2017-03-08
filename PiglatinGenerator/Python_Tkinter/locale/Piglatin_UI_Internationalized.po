@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2017-03-08 11:31+0530\n"
-"PO-Revision-Date: 2017-03-08 11:47+0530\n"
+"PO-Revision-Date: 2017-03-08 14:08+0530\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: hi\n"
@@ -22,7 +22,7 @@ msgstr ""
 # नमस्ते
 #: Piglatin_UI_Internationalized.py:14 Piglatin_UI_Internationalized.py:40
 msgid "hello"
-msgstr "हैलो"
+msgstr "namesta"
 
 #: Piglatin_UI_Internationalized.py:15
 msgid "how are you?"
