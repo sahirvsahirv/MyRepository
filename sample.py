@@ -93,26 +93,35 @@ class Controller:
             self.__checkForQuit()
 
             for event in pygame.event.get():
-                if event.type == pygame.MOUSEBUTTONUP:
+                #Detect a move
+                #make it simple only one square can be moved
+                if event.type == pygame.MOUSEBUTTONUP and pygame.MOUSEMOTION and pygame.MOUSEBUTTONDOWN:
                     #unpack the tuple
                     print("tuple = {}".format(event.pos))
                     x,y = event.pos
                     print("x ={}, y ={}".format(x,y))
                     n = self.__getSpotClicked(self.board, x, y)
                     print("Clicked tile = {}".format(n))
-                    if n == -1:
-                        #do nothing for now
-                        return
-                    
-                        
-                        
-                            
-                    
-                    
+                    #No returning -1 any more. Continuiing till the user clicks something
+                    ##                    if n == -1:
+                    ##do nothing for now
+                    ##return
+                    self.__checkIfEmptyAndMove(n)
+                elif   
             #Update the screen
             pygame.display.update()
 
+    def __slideInto(newPos):
+        print("do it")    
+        return
     
+    def __checkIfEmptyAndMove(self, newPos):
+        #check if empty
+        if(board[newPos] == 0]):
+            self.__slideInto(newPos)
+        else:
+        
+                
     def __getSpotClicked(self, board, x, y):
         #From pixel coordinates, get where on the board it is
         for i in range(len(board)):
