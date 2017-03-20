@@ -93,22 +93,44 @@ class Controller:
             self.__checkForQuit()
 
             for event in pygame.event.get():
-                if event.type == MOUSEBUTTONUP:
-                    spotx, spoty = self.__getSpotClicked(self.board, event.pos[0], event.pos[1])
-                    print(spotx, spoty)
+                if event.type == pygame.MOUSEBUTTONUP:
+                    #unpack the tuple
+                    print("tuple = {}".format(event.pos))
+                    x,y = event.pos
+                    print("x ={}, y ={}".format(x,y))
+                    n = self.__getSpotClicked(self.board, x, y)
+                    print("Clicked tile = {}".format(n))
+                    if n == -1:
+                        #do nothing for now
+                        return
+                    
+                        
+                        
+                            
+                    
                     
             #Update the screen
             pygame.display.update()
 
     
-    def __getSpotClicked(board, x, y):
+    def __getSpotClicked(self, board, x, y):
         #From pixel coordinates, get where on the board it is
         for i in range(len(board)):
-            (left, top) = self.__getPixelCoordinates(i)
-            tileRect =  pygame.Rect(left, top, TILEWIDTH, TILEHEIGHT)
+            #unpack the tuple
+            left, top = self.__getPixelCoordinates(i)
+            #Add the offset for get position in the inner screen
+            tileRect =  pygame.Rect(left+COORDX, top+COORDY, TILEWIDTH, TILEHEIGHT)
+            print("Tile object = {}".format(tileRect))
             if tileRect.collidepoint(x,y):
-                return i
-        return (None,None)
+                #If collides, get the tile number
+                if(i >= 0 and i <=8):
+                    return i
+                else:
+                    print("should it ever come here?")
+            else:
+                #if not inside the game tile it comes here
+                print("Continuing the loop")
+                continue
                 
       
     def __checkForQuit(self):
@@ -214,7 +236,7 @@ class Controller:
         """
         left = TILEWIDTH*(n%ROWCOLMAX)
         #Imagine not typecasting here, gives different values 
-        top = TILEWIDTH*int(n/ROWCOLMAX)
+        top = TILEHEIGHT*int(n/ROWCOLMAX)
         return (left, top)
 
     #Draw the tile
