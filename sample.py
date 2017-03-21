@@ -133,11 +133,21 @@ class Controller:
                 return
         
         def __checkIfValidMove(self, oldPos, newPos):
+                print("oldPos = {} , newPos = {}".format(oldPos, newPos))
+                #not one of the 9 grids
+                if(newPos == None):
+                        return False
+                print("board value at position oldPos = {}".format(self.board[oldPos]))
+                #If moving from an empty position
+                if(self.board[oldPos] == 0):
+                        #TODO: message box on the screen
+                        print("Display message - choose a tile to move")
+                        return False
                 self.__turnBoardToTwoDim()
                 #Get row and column from BoardPosition
-                oldrow = oldPos/3
+                oldrow = int(oldPos/3)
                 oldcol = oldPos%3
-                newrow = newPos/3
+                newrow = int(newPos/3)
                 newcol = newPos%3
 
                 #possible new positions
@@ -146,6 +156,11 @@ class Controller:
                 #oldrow, oldcol-1. Position = oldrow*BOARDSIZE+(col-1)
                 #oldrow, oldcol+1. Position = oldrow*BOARDSIZE+(col+1)
 
+                print("possible pos = {} and newPos = {}".format(((oldrow-1)*BOARDSIZE+oldcol), newPos))
+                print("possible pos = {} and newPos = {}".format(((oldrow+1)*BOARDSIZE+oldcol), newPos))
+                print("possible pos = {} and newPos = {}".format((oldrow*BOARDSIZE+(oldcol-1)), newPos))
+                print("possible pos = {} and newPos = {}".format((oldrow*BOARDSIZE+(oldcol+1)), newPos))
+                
                 if(((oldrow-1)*BOARDSIZE+oldcol in range(0,8)) and (newPos == (oldrow-1)*BOARDSIZE+oldcol)):
                         print("returning is a valid move")
                         return True
