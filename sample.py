@@ -3,6 +3,7 @@ import random
 import pygame
 import sys
 
+
 ##red = (255,0,0)
 ##green = (0,255,0)
 ##blue = (0,0,255)
@@ -35,6 +36,7 @@ GAMEBOARDCOLOR = BLUISH
 GAMEBOARDCOORD = (COORDX, COORDY, COORDWIDTH, COORDHEIGHT)
 SCREENCOLOR = SCREENBLUE
 BOARDSIZE = 3
+NOBORDER = 0
 
 def terminate():
         pygame.quit()
@@ -121,8 +123,20 @@ class Controller:
                                 #Update the screen
                                 pygame.display.update()
 
-        def __slideInto(newPos):
-                print("do it")
+        def __slideInto(self, oldPos, newPos, newNumber):
+                (leftold, topold) = self.__getPixelCoordinates(oldPos)
+                (left, top) = self.__getPixelCoordinates(newPos)
+                print("Erase coordinates {}".format(leftold, topold))
+                print("Slide into coordinates {}".format(left, top))
+                
+                #Erase old and erase where you slide into as well
+                self.__drawTile(leftold, topold, COORDX, COORDY, 0)
+                self.__drawTile(left, top, COORDX, COORDY, 0)
+                #+100 because i have left a 100 gap at the top
+                self.__drawTile(left, top, COORDX, COORDY, newNumber)
+                
+                print("Done")
+                
                 return
         
         def __turnBoardToTwoDim(self):
@@ -135,7 +149,7 @@ class Controller:
         def __checkIfValidMove(self, oldPos, newPos):
                 print("oldPos = {} , newPos = {}".format(oldPos, newPos))
                 #not one of the 9 grids
-                if(newPos == None):
+                if((newPos == None) or (oldPos == None)):
                         return False
                 print("board value at position oldPos = {}".format(self.board[oldPos]))
                 #If moving from an empty position
@@ -145,10 +159,10 @@ class Controller:
                         return False
                 self.__turnBoardToTwoDim()
                 #Get row and column from BoardPosition
-                oldrow = int(oldPos/3)
-                oldcol = oldPos%3
-                newrow = int(newPos/3)
-                newcol = newPos%3
+                oldrow = int(oldPos/BOARDSIZE)
+                oldcol = oldPos%BOARDSIZE
+                newrow = int(newPos/BOARDSIZE)
+                newcol = newPos%BOARDSIZE
 
                 #possible new positions
                 #oldrow-1, oldcol. Position = (oldrow-1)*BOARDSIZE+col
@@ -160,17 +174,17 @@ class Controller:
                 print("possible pos = {} and newPos = {}".format(((oldrow+1)*BOARDSIZE+oldcol), newPos))
                 print("possible pos = {} and newPos = {}".format((oldrow*BOARDSIZE+(oldcol-1)), newPos))
                 print("possible pos = {} and newPos = {}".format((oldrow*BOARDSIZE+(oldcol+1)), newPos))
-                
-                if(((oldrow-1)*BOARDSIZE+oldcol in range(0,8)) and (newPos == (oldrow-1)*BOARDSIZE+oldcol)):
+                #range(0,11) gives 0-10
+                if( ( ((oldrow-1)*BOARDSIZE+oldcol) in range(0,len(self.board))) and (newPos == ((oldrow-1)*BOARDSIZE+oldcol)) ):
                         print("returning is a valid move")
                         return True
-                elif(((oldrow+1)*BOARDSIZE+oldcol in range(0,8)) and (newPos == (oldrow+1)*BOARDSIZE+oldcol)):
+                elif( ( ((oldrow+1)*BOARDSIZE+oldcol) in range(0,len(self.board))) and (newPos == ((oldrow+1)*BOARDSIZE+oldcol)) ):
                         print("returning is a valid move")
                         return True
-                elif((oldrow*BOARDSIZE+(oldcol-1) in range(0,8)) and (newPos == oldrow*BOARDSIZE+(oldcol-1))):
+                elif( ((oldrow*BOARDSIZE+(oldcol-1)) in range(0,len(self.board))) and (newPos == (oldrow*BOARDSIZE+(oldcol-1)))):
                         print("returning is a valid move")
                         return True
-                elif((oldrow*BOARDSIZE+(oldcol+1) in range(0,8)) and (newPos == oldrow*BOARDSIZE+(oldcol+1))):
+                elif( ((oldrow*BOARDSIZE+(oldcol+1)) in range(0,len(self.board))) and (newPos == (oldrow*BOARDSIZE+(oldcol+1))) ):
                         print("returning is a valid move")
                         return True
                 else:
@@ -178,11 +192,37 @@ class Controller:
                         return False
                 
 
-        def __checkIfEmpty(self):
-                return True
+        def __checkIfEmpty(self, oldPos, newPos):
+                #not one of the 9 grids
+                if((newPos == None) or (oldPos == None)):
+                        return False
+                print("board value to position newPos = {}".format(self.board[newPos]))
+                #If moving to an empty position
+                if(self.board[newPos] == 0):
+                        return True
+                return False
 
-        def __checkIfValidJoinTiles(self):
-                return True
+        def __checkIfValidJoinTiles(self, oldPos, newPos):
+                #not one of the 9 grids
+                if((newPos == None) or (oldPos == None)):
+                        return False
+                print("board value to position newPos = {}".format(self.board[oldPos]+self.board[newPos]))
+                if((self.board[oldPos]+self.board[newPos]) > 10):
+                        #Erroneus move - do nothing
+                        return False
+                elif((self.board[oldPos]+self.board[newPos]) == 10):
+                        print("10 done")
+                        #change the board and re-draw the tile
+                        #TODO: make it non clickable
+                        return True
+                #If moving to a valid positon < 10
+                else:
+                        print("Valid less than 10")
+                        #Redraw the tile to new value
+                        #change the board and maintain a new board perhaps?
+                        return True
+                return False
+                
         
         def __checkIfEmptyAndMove(self, oldPos, newPos):
                 #Algorithm
@@ -191,12 +231,19 @@ class Controller:
                 #if not empty add and make it 10 or show error and stay at the same place
                 if(self.__checkIfValidMove(oldPos, newPos)):
                         print("Valid move")
-                        if(self.__checkIfEmpty()):
-                                self.__slideInto()
+                        if(self.__checkIfEmpty(oldPos, newPos)):
+                                self.board[newPos] = self.board[oldPos]
+                                #empty it
+                                self.board[oldPos] = 0
+                                self.__slideInto(oldPos, newPos, self.board[newPos])
                         else:
                                 #Add board positions
-                                if(self.__checkIfValidJoinTiles()):
-                                        self.__slideInto()
+                                if(self.__checkIfValidJoinTiles(oldPos, newPos)):
+                                        self.board[newPos] = self.board[oldPos]+self.board[newPos]
+                                        self.board[oldPos] = 0
+                                        #empty it
+                                        self.board[oldPos] = 0
+                                        self.__slideInto(oldPos, newPos, self.board[newPos])
                                 else:
                                         #do nothing
                                         #ToDO: probably show a message and stay at the same place
@@ -218,7 +265,7 @@ class Controller:
                         print("Tile object = {}".format(tileRect))
                         if tileRect.collidepoint(x,y):
                                 #If collides, get the tile number
-                                if(i >= 0 and i <=8):
+                                if(i in range(0, len(board))):
                                         return i
                                 else:
                                         print("should it ever come here?")
@@ -268,7 +315,8 @@ class Controller:
                                         (left, top) = self.__getPixelCoordinates(i)
                                         print(left, top)
                                         #+100 because i have left a 100 gap at the top
-                                        self.__drawTile(left, top, COORDX, COORDY)
+                                        #TODO:hard coded
+                                        self.__drawTile(left, top, COORDX, COORDY, board[i])
                                 else:
                                         continue
 
@@ -338,16 +386,26 @@ class Controller:
                 return (left, top)
 
         #Draw the tile
-        def __drawTile(self, tilex, tiley, adjx, adjy):
+        def __drawTile(self, tilex, tiley, adjx, adjy, tileNumber):
                 """
                 Draw the tiles with random numbers that mix to form 10
                 """
-                pygame.draw.rect(SCREEN, TILECOLOR, (tilex+adjx, tiley+adjy, TILEWIDTH, TILEHEIGHT), BORDERWIDTH)
-                #Render images here later with the random number
-                textSurf = BASICFONT.render(str(5), True, TEXTCOLOR)
-                textRect = textSurf.get_rect()
-                textRect.center = tilex + int(150/2) + adjx, tiley + int(150/2) + adjy
-                SCREEN.blit(textSurf, textRect)
+                #Erase
+                if(tileNumber == 0):
+                        print("Erase the tile")
+                        pygame.draw.rect(SCREEN, BLUISH, (tilex+adjx, tiley+adjy, TILEWIDTH, TILEHEIGHT), NOBORDER)
+                        #Render images here later with the random number
+                        #textSurf = BASICFONT.render("", True, TEXTCOLOR)
+                        #textRect = textSurf.get_rect()
+                        #textRect.center = tilex + int(TILEWIDTH/2) + adjx, tiley + int(TILEHEIGHT/2) + adjy
+                        #SCREEN.blit(textSurf, textRect)
+                else:
+                        pygame.draw.rect(SCREEN, TILECOLOR, (tilex+adjx, tiley+adjy, TILEWIDTH, TILEHEIGHT), BORDERWIDTH)
+                        #Render images here later with the random number
+                        textSurf = BASICFONT.render(str(tileNumber), True, TEXTCOLOR)
+                        textRect = textSurf.get_rect()
+                        textRect.center = tilex + int(TILEWIDTH/2) + adjx, tiley + int(TILEHEIGHT/2) + adjy
+                        SCREEN.blit(textSurf, textRect)
                 return
 
 
