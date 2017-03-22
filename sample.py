@@ -23,6 +23,13 @@ COORDY = 100 #Gap
 COORDWIDTH = 450
 COORDHEIGHT = 450
 SCREENBLUE = (50, 50, 128)
+JUSTTEN = 10
+COMB1 = [9,1]
+COMB2 = [8,2]
+COMB3 = [7,3]
+COMB4 = [6,4]
+COMB5 = [5,5]
+PAIRSIZE = 2
 
 TILECOLOR = GREEN
 TILEWIDTH = 150
@@ -320,6 +327,21 @@ class Controller:
                                 else:
                                         continue
 
+        def __nestedListstoList(self, nestedListOfPairs):
+                """
+                Convert nested list to a single dim list
+                """
+                print("Nested list of pairs = {}".format(nestedListOfPairs))
+                singleList = [0]*(len(nestedListOfPairs)*PAIRSIZE)
+                listiter = 0
+                print(singleList)
+                for row in range(len(nestedListOfPairs)):
+                        for col in range(PAIRSIZE):
+                                print("lisiter = {}, row = {}. col = {}".format(listiter, row, col))
+                                singleList[listiter] = nestedListOfPairs[row][col]
+                                listiter = listiter + 1
+                print("populated single = {}".format(singleList))
+                return singleList
         #Usage: print(getStartingBoardDS.__doc__)
         #import sample
         #help(sample)
@@ -331,7 +353,12 @@ class Controller:
 
                 Right now hardcoded to a combination of 4 tiles with 2 5's
                 """
-
+                #Algorithm: Start with 2 numbers any of COMB1 - COMB5
+                #When all are 10, take 4, pick 2 of COMB1-COMB5
+                #Next level pick 6, 3 of all
+                #Next level pick 8, 4 of all
+                #OR in random 2,4,6,8 of all 5 
+                
                 #starting state
                 #generate combinations of 10 in random
                 #populate random positions max leave one square free
@@ -339,7 +366,7 @@ class Controller:
 
                 #For now choose [5] 4 times - will get 2 10's
 
-                board = [0]*9
+                board = [0]*(BOARDSIZE*BOARDSIZE)
                 #print(board)
                 #tilesoccupied should never increae 8
                 tilesoccupied = 0
@@ -350,15 +377,38 @@ class Controller:
                 #not unique
                 #random.randint(0, 8)
                 #Second parameter chooses 4 items
-                tiletooccupy = random.sample(range(0, 8), 4)
+
+                #Since we have items in pairs
+                noOfPairs = random.randrange(1, int(len(board)/2))
+                #sample 1st param = population, set of 5
+                #2nd param = k set of items
+                tiletooccupy = random.sample([COMB1, COMB2, COMB3, COMB4, COMB5], noOfPairs)
                 #print("Sample of 4 fives = {}".format(tiletooccupy))
                 #Set all the 4 random positions to 5
-                for i in range(4):
-                        board[tiletooccupy[i]] = 5
+
+                #now i need a random sample of board positions
+                tilesOccupied =  noOfPairs*PAIRSIZE
+                print("Tiles occupied = {}".format(tilesOccupied))
+                #Turn list of lists to a list of integers
+                boardlist = self.__nestedListstoList(tiletooccupy)
+                #returns a number from 1 to tilesOccupied (2/4/6/8)
+                for i in range(0, tilesOccupied):
+                        #BUG: Unique board positions
+                        boardposition = random.randint(0, ((BOARDSIZE*BOARDSIZE)-1) )
+                        #Create another till you get a new one
+                        while(board[boardposition] != 0):
+                                print("Choosing board position again")
+                                boardposition = random.randint(0, ((BOARDSIZE*BOARDSIZE)-1) )
+                        print("Boardposition = {} and value = {}".format(boardposition, boardlist[i]))
+                        board[boardposition] = boardlist[i]
                         tilesoccupied += 1
 
-                        #print(tilesoccupied)
-                        #print(board)
+######                for i in range(tilesOccupied):
+######                        board[tiletooccupy[i]] = 5
+######                        tilesoccupied += 1
+
+                print(tilesoccupied)
+                print(board)
                 #If there is one more tab here - return will go inside the for and return
                 #after 1 5 itself
                 return board
