@@ -210,6 +210,9 @@ class Controller:
                 return False
 
         def __checkIfValidJoinTiles(self, oldPos, newPos):
+                #Check if all are 10's and draw a new tile
+                #Let 10's move around but and slide into
+                
                 #not one of the 9 grids
                 if((newPos == None) or (oldPos == None)):
                         return False
@@ -222,6 +225,7 @@ class Controller:
                         #change the board and re-draw the tile
                         #TODO: make it non clickable
                         return True
+                        
                 #If moving to a valid positon < 10
                 else:
                         print("Valid less than 10")
@@ -229,7 +233,12 @@ class Controller:
                         #change the board and maintain a new board perhaps?
                         return True
                 return False
-                
+
+        def __checkifGameOver(self):
+                for i in range(0, len(self.board)):
+                        if((self.board[i] != 10) and (self.board[i] != 0)):
+                                return False
+                return True
         
         def __checkIfEmptyAndMove(self, oldPos, newPos):
                 #Algorithm
@@ -246,11 +255,20 @@ class Controller:
                         else:
                                 #Add board positions
                                 if(self.__checkIfValidJoinTiles(oldPos, newPos)):
+                                        
                                         self.board[newPos] = self.board[oldPos]+self.board[newPos]
                                         self.board[oldPos] = 0
                                         #empty it
                                         self.board[oldPos] = 0
                                         self.__slideInto(oldPos, newPos, self.board[newPos])
+
+                                        print("Checking if game is over")
+                                        print("Board = {}".format(self.board))
+                                        if(self.__checkifGameOver()):
+                                                #draw board again
+                                                print("Game over")
+                                        else:
+                                                print("Game is not over")
                                 else:
                                         #do nothing
                                         #ToDO: probably show a message and stay at the same place
