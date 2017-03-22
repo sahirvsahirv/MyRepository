@@ -266,6 +266,11 @@ class Controller:
                                         print("Board = {}".format(self.board))
                                         if(self.__checkifGameOver()):
                                                 #draw board again
+                                                self.board = self.__getStartingBoardDS()
+                                                print(self.board)
+                                                #Print message woth ok
+                                                #Erase previous tile
+                                                self.__drawBoard(self.board, "")
                                                 print("Game over")
                                         else:
                                                 print("Game is not over")
