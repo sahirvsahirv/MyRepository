@@ -2,7 +2,7 @@ import os
 import random
 import pygame
 import sys
-
+import pygame.time
 
 ##red = (255,0,0)
 ##green = (0,255,0)
@@ -13,7 +13,9 @@ import sys
 ##pink = (255,200,200)
 
 #Constants
-GREEN = (0, 204, 0)
+RED = (255, 0 , 0)
+GREEN = (0, 255, 0)
+BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 WIDTH = 450
 HEIGHT = 650
@@ -30,6 +32,8 @@ COMB3 = [7,3]
 COMB4 = [6,4]
 COMB5 = [5,5]
 PAIRSIZE = 2
+GAMEOVERXPOS = 325
+GAMEOVERYPOS = 225
 
 TILECOLOR = GREEN
 TILEWIDTH = 150
@@ -41,6 +45,8 @@ ROWCOLMAX = 3
 SCREENSIZE = (WIDTH, HEIGHT)
 GAMEBOARDCOLOR = BLUISH
 GAMEBOARDCOORD = (COORDX, COORDY, COORDWIDTH, COORDHEIGHT)
+MESSAGECOLOR = RED
+MESSAGEBGCOLOR = BLACK
 SCREENCOLOR = SCREENBLUE
 BOARDSIZE = 3
 NOBORDER = 0
@@ -58,6 +64,8 @@ def terminate():
 class Controller:
         board = [0]*(BOARDSIZE*BOARDSIZE)
         twoDimBoard = [[0]*BOARDSIZE]*BOARDSIZE
+        
+        
         def __init__(self):
                 global SCREEN, BASICFONT
                 #Pygame initiation
@@ -94,7 +102,8 @@ class Controller:
                 #draw the board
                 self.board = self.__getStartingBoardDS()
                 print(self.board)
-                self.__drawBoard(self.board, "")
+                reDraw = False
+                self.__drawBoard(self.board, "", reDraw)
 
         def control(self):
                 running = True
@@ -119,7 +128,23 @@ class Controller:
                                         ##                    if n == -1:
                                         ##do nothing for now
                                         ##return
-                                        self.__checkIfEmptyAndMove(clickedTile, movedToTile)
+                                        gameOver = self.__checkIfEmptyAndMove(clickedTile, movedToTile)
+                                        if(gameOver):
+                                                #TODO:display game over message
+                                                reDraw = False
+                                                self.__drawBoard(self.board, "Game Over", reDraw)
+                                                #For modularity shifted drawing board from "__checkIfEmptyAndMove"
+                                                #to here
+                                                #Let the clock tick for 60 seconds before re-drawing
+                                                #clock = pygame.time.Clock()
+                                                #clock.tick(60)
+                                                #Get the new board and Draw the board again
+                                                self.board = self.__getStartingBoardDS()
+                                                print(self.board)
+                                                print("Board = {}".format(self.board))
+                                                #Pass another parameter to know it is re-drawing, to save effort of erasing
+                                                reDraw = True
+                                                self.__drawBoard(self.board, "", reDraw)
                                 elif(event.type ==  pygame.MOUSEBUTTONDOWN):
                                         #set a boolean flag as to it was pressed and get the cell in which it happened
                                         x,y = event.pos
@@ -129,6 +154,7 @@ class Controller:
                                         
                                 #Update the screen
                                 pygame.display.update()
+                                #pygame.display.flip()
 
         def __slideInto(self, oldPos, newPos, newNumber):
                 (leftold, topold) = self.__getPixelCoordinates(oldPos)
@@ -137,9 +163,12 @@ class Controller:
                 print("Slide into coordinates {}".format(left, top))
                 
                 #Erase old and erase where you slide into as well
+                print("Erasing old tile")
                 self.__drawTile(leftold, topold, COORDX, COORDY, 0)
+                print("Erasing where you are sliding into")
                 self.__drawTile(left, top, COORDX, COORDY, 0)
                 #+100 because i have left a 100 gap at the top
+                print("redrawing with new value")
                 self.__drawTile(left, top, COORDX, COORDY, newNumber)
                 
                 print("Done")
@@ -261,27 +290,33 @@ class Controller:
                                         #empty it
                                         self.board[oldPos] = 0
                                         self.__slideInto(oldPos, newPos, self.board[newPos])
-
+                                        #Extra time for the user to realise combinations are done
+                                        clock = pygame.time.Clock()
+                                        clock.tick(10)
                                         print("Checking if game is over")
                                         print("Board = {}".format(self.board))
                                         if(self.__checkifGameOver()):
                                                 #draw board again
-                                                self.board = self.__getStartingBoardDS()
-                                                print(self.board)
+                                                #self.board = self.__getStartingBoardDS()
+                                                #print(self.board)
                                                 #Print message woth ok
                                                 #Erase previous tile
-                                                self.__drawBoard(self.board, "")
+                                                #Don't draw here
+                                                #self.__drawBoard(self.board, "")
+                                                
                                                 print("Game over")
+                                                return True
                                         else:
+                                                return False
                                                 print("Game is not over")
                                 else:
                                         #do nothing
                                         #ToDO: probably show a message and stay at the same place
-                                        return
+                                        return False
                 else:
                         print("Coming in not a valid move's else")
                         #TODO: Display error message and stay at same place
-                        return
+                        return False
                         
             
 
@@ -325,18 +360,23 @@ class Controller:
                 textSurf = BASICFONT.render(text, True, color, bgcolor)
                 textRect = textSurf.get_rect()
                 textRect.topleft = (top, left)
+                
                 return (textSurf, textRect)
 
         #Controller for drawing tiles
-        def __drawBoard(self, board, message):
+        def __drawBoard(self, board, message, reDraw):
                 """
                 Draw the board with tiles for a given filled single dimensional array-board
 
                 Message - if exists means you can display the message in a corner
                 """
                 if message:
-                        textSurf, textRect = makeText(message, MESSAGECOLOR, BGCOLOR, 5, 5)
+                        textSurf, textRect = self.__makeText(message, MESSAGECOLOR, MESSAGEBGCOLOR, GAMEOVERYPOS, GAMEOVERXPOS)
                         SCREEN.blit(textSurf, textRect)
+                        #Time the clock and redraw new combination of tiles where you re-start
+                        #clock = pygame.time.Clock()
+                        #clock.tick(30)
+                        return
                 #There was no else here and for was inside the if, for should be next to drawBoard
                 #without the else
                 else:
@@ -345,7 +385,17 @@ class Controller:
                                         (left, top) = self.__getPixelCoordinates(i)
                                         print(left, top)
                                         #+100 because i have left a 100 gap at the top
-                                        #TODO:hard coded
+                                        #First time erase not required
+                                        #Erase old tile for a new game situation
+
+                                        #Erase the position you are drawing into, only if you are re-drawing
+                                        #saving effort
+                                        if(reDraw):
+                                                print("Erasing old tile")
+                                                #BUG resolved:Passing 0 for draw tile to erase
+                                                self.__drawTile(left, top, COORDX, COORDY, 0)
+                                                
+                                        #Drawing the new board position
                                         self.__drawTile(left, top, COORDX, COORDY, board[i])
                                 else:
                                         continue
