@@ -1,23 +1,28 @@
+#TODO: Wrong combination case where all are not 10's and all combinations are more than 10
+#Just give an option of new game
+
+#Music from
+#http://www.soundjig.com/pages/soundfx/beeps.html
+
+#Help usage
+#Usage: print(getStartingBoardDS.__doc__)
+#import filename
+#help(filename)
+
+#If time needs to be used
+#Time the clock and redraw new combination of tiles where you re-start
+#clock = pygame.time.Clock()
+#clock.tick(200)
+
+#imports
 import os
 import random
 import pygame
 import sys
 import pygame.time
 
-##red = (255,0,0)
-##green = (0,255,0)
-##blue = (0,0,255)
-##darkBlue = (0,0,128)
-##white = (255,255,255)
-##black = (0,0,0)
-##pink = (255,200,200)
 
-#TODO: Wrong combination case where all are not 10's and all combinations are more than 10
-#Just give an option of new game
-#http://www.soundjig.com/pages/soundfx/beeps.html
-
-
-#Constants
+#RGB
 RED = (255, 0 , 0)
 GREEN = (0, 255, 0)
 BLACK = (0, 0, 0)
@@ -25,17 +30,41 @@ WHITE = (255, 255, 255)
 PINK = (255,200,200)
 BLUE = (0,0,255)
 DARKBLUE = (0,0,128)
+BLUISH = (50, 50, 255)
 
+SCREENBLUE = (50, 50, 128)
+TILECOLOR = GREEN
+GAMEBOARDCOLOR = BLUISH
+SCREENCOLOR = SCREENBLUE
+TEXTCOLOR = WHITE
+MESSAGECOLOR = RED
+MESSAGEBGCOLOR = BLACK
 
+#Constants
+#Width and height of screen
 WIDTH = 450
 HEIGHT = 650
-BLUISH = (50, 50, 255)
+#total Screen tuple
+SCREENSIZE = (WIDTH, HEIGHT)
+#Gap for the game tile from the top
 COORDX = 0
-COORDY = 100 #Gap
+COORDY = 100
+#Game tile
 COORDWIDTH = 450
 COORDHEIGHT = 450
-SCREENBLUE = (50, 50, 128)
+#Game over message position
+GAMEOVERXPOS = 100
+GAMEOVERYPOS = 550
+#Make the tiles smaller to see margins, else all tiles merge into one another
+XMARGIN = 5
+YMARGIN = 5
+#For the middle squares to see the margin - need margins on both sides
+TILEWIDTH = 150-(2*XMARGIN)
+TILEHEIGHT = 150-(2*YMARGIN)
+#Game board rectangle
+GAMEBOARDCOORD = (COORDX, COORDY, COORDWIDTH, COORDHEIGHT)
 
+#combinations
 JUSTTEN = 10
 COMB1 = [9,1]
 COMB2 = [8,2]
@@ -44,363 +73,21 @@ COMB4 = [6,4]
 COMB5 = [5,5]
 PAIRSIZE = 2
 
-
-GAMEOVERXPOS = 100
-GAMEOVERYPOS = 550
-
-TILECOLOR = GREEN
-GAMEBOARDCOLOR = BLUISH
-SCREENCOLOR = SCREENBLUE
-
-#Make the tiles smaller to see margins
-XMARGIN = 5
-YMARGIN = 5
-
-#For the middle squares to see the margin - need margins on both sides
-TILEWIDTH = 150-(2*XMARGIN)
-TILEHEIGHT = 150-(2*YMARGIN)
+#font
 BASICFONTSIZE = 20
-TEXTCOLOR = WHITE
+#rest
 BORDERWIDTH = 5
 ROWCOLMAX = 3
-SCREENSIZE = (WIDTH, HEIGHT)
-
-GAMEBOARDCOORD = (COORDX, COORDY, COORDWIDTH, COORDHEIGHT)
-MESSAGECOLOR = RED
-MESSAGEBGCOLOR = BLACK
-
 BOARDSIZE = 3
 NOBORDER = 0
 
-def terminate():
-        pygame.quit()
-        #This is required. If you comment this and you click quit it will give
-        #an error saying pygame is not initializd but am still trying to update
-        #on the next line
-        #if we add this, the shell will exit for the current code and the error
-        #will not be seen
-        sys.exit()
+
 
 #Had to create this since inititalization was happening multiple times
 class Controller:
         board = [0]*(BOARDSIZE*BOARDSIZE)
         twoDimBoard = [[0]*BOARDSIZE]*BOARDSIZE
-        
-        
-        def __init__(self):
-                global SCREEN, BASICFONT
-                #Pygame initiation
-                os.environ["SDL_VIDEO_CENTERED"] = "1"
-                pygame.init()
-                #Get the font
-                BASICFONT = pygame.font.Font('freesansbold.ttf', BASICFONTSIZE)
-                #set up display
-                pygame.display.set_caption("Junior 10")
-                #Screen to draw on
-                SCREEN = pygame.display.set_mode(SCREENSIZE)
 
-                #r,g,b
-                SCREEN.fill(SCREENCOLOR)
-
-                ##pygame.draw.lines(screen, color, closed, pointlist, thickness)
-                ##draws a series of lines, connecting the points specified in pointlist
-                ##pointlist is a list of tuples, specifying a series of points, e.g. to draw a V you might use [(100,100), (150,200), (200,100)], with closed = False
-                ##closed should be either True or False, indicating whether to connect the last point back to the first
-                ##thickness is the thickness of the line (in pixels).
-                ##Example: pygame.draw.lines(screen, black, False, [(100,100), (150,200), (200,100)], 1)
-                #pygame.draw.lines(screen, colorName, False,  [(100,100), (150,200), (200,100)], 1)
-
-
-                #last parameter if 0, the rectangle is filled
-                #(x,y,width,height) is a Python tuple
-                #x,y are the coordinates of the upper left hand corner
-                #width, height are the width and height of the rectangle
-                pygame.draw.rect(SCREEN, GAMEBOARDCOLOR, GAMEBOARDCOORD, 0)
-
-                #inner rectangle is x = 420,y = 400 - divide the square into 9 pieces
-                #450/3 = 150
-                #450/3 = 150
-                #draw the board
-                self.board = self.__getStartingBoardDS()
-                print(self.board)
-                reDraw = False
-                self.__drawBoard(self.board, "", reDraw)
-                #Play sound
-                #http://www.nerdparadise.com/programming/pygame/part3
-                pygame.mixer.music.load('background.mp3')
-                #Play once
-                #pygame.mixer.music.play(0)
-                #Play infinitely
-                pygame.mixer.music.play(-1)
-                
-                
-                
-        def control(self):
-                running = True
-                #making them outside the scope of the if conditions and giving it scope inside the
-                #function so that it can be accessed throughout inside control
-                clickedTile = -1
-                movedToTile = -1
-                gameOver = False
-                while running:
-                        self.__checkForQuit()
-
-                        for event in pygame.event.get():
-                                #Detect a move
-                                #make it simple only one square can be moved
-                                if(event.type == pygame.MOUSEBUTTONUP and gameOver==True):
-                                        print("tuple = {}".format(event.pos))
-                                        x,y = event.pos
-                                        print("x ={}, y ={}".format(x,y))
-                                        
-                                        if(MSGTEXTRECT.collidepoint(x,y)):
-                                                #For modularity shifted drawing board from "__checkIfEmptyAndMove"
-                                                #to here
-                                                #Let the clock tick for 60 seconds before re-drawing
-                                                #clock = pygame.time.Clock()
-                                                #clock.tick(60)
-                                                #Get the new board and Draw the board again
-                                                self.board = self.__getStartingBoardDS()
-                                                print(self.board)
-                                                print("Board = {}".format(self.board))
-                                                pygame.draw.rect(SCREEN, GAMEBOARDCOLOR, GAMEBOARDCOORD, 0)
-                                                #Pass another parameter to know it is re-drawing, to save effort of erasing
-                                                reDraw = True
-                                                self.__drawBoard(self.board, "", reDraw)
-                                                #New game
-                                                gameOver = False
-                                elif(event.type == pygame.MOUSEBUTTONUP and pygame.MOUSEMOTION and pygame.MOUSEBUTTONDOWN):
-                                        #unpack the tuple
-                                        print("tuple = {}".format(event.pos))
-                                        x,y = event.pos
-                                        print("x ={}, y ={}".format(x,y))
-                                        movedToTile = self.__getSpotClicked(self.board, x, y)
-                                        print("Moved to tile = {}".format(movedToTile))
-                                        #No returning -1 any more. Continuiing till the user clicks something
-                                        ##                    if n == -1:
-                                        ##do nothing for now
-                                        ##return
-                                        gameOver = self.__checkIfEmptyAndMove(clickedTile, movedToTile)
-                                        if(gameOver):
-                                                pygame.mixer.music.stop()
-                                                pygame.mixer.music.load('gameover.mp3')
-                                                pygame.mixer.music.play(0)
-                                                #TODO:display game over message
-                                                reDraw = False
-                                                self.__drawBoard(self.board, "Game Over. Continue?", reDraw)
-                                elif(event.type ==  pygame.MOUSEBUTTONDOWN):
-                                        print("Clicking game over")
-                                        pygame.mixer.music.stop()
-                                        pygame.mixer.music.load('background.mp3')
-                                        pygame.mixer.music.play(-1)
-                                        #set a boolean flag as to it was pressed and get the cell in which it happened
-                                        x,y = event.pos
-                                        print("x ={}, y ={}".format(x,y))
-                                        clickedTile = self.__getSpotClicked(self.board, x, y)
-                                        print("Clicked tile = {}".format(clickedTile))
-                                        
-                                #Update the screen
-                                pygame.display.update()
-                                #pygame.display.flip()
-
-        def __slideInto(self, oldPos, newPos, newNumber):
-                (leftold, topold) = self.__getPixelCoordinates(oldPos)
-                (left, top) = self.__getPixelCoordinates(newPos)
-                print("Erase coordinates {}".format(leftold, topold))
-                print("Slide into coordinates {}".format(left, top))
-                
-                #Erase old and erase where you slide into as well
-                print("Erasing old tile")
-                self.__drawTile(leftold, topold, COORDX, COORDY, 0)
-                print("Erasing where you are sliding into")
-                self.__drawTile(left, top, COORDX, COORDY, 0)
-                #+100 because i have left a 100 gap at the top
-                
-                print("redrawing with new value")
-                self.__drawTile(left, top, COORDX, COORDY, newNumber)
-                
-                
-                print("Done")
-                
-                return
-        
-        def __turnBoardToTwoDim(self):
-                #board is a member variable
-                for row in range(BOARDSIZE):
-                        for col in range(BOARDSIZE):
-                                self.twoDimBoard[row][col] = self.board[row*BOARDSIZE+col]
-                return
-        
-        def __checkIfValidMove(self, oldPos, newPos):
-                print("oldPos = {} , newPos = {}".format(oldPos, newPos))
-                #not one of the 9 grids
-                if((newPos == None) or (oldPos == None)):
-                        return False
-                print("board value at position oldPos = {}".format(self.board[oldPos]))
-                #If moving from an empty position
-                if(self.board[oldPos] == 0):
-                        #TODO: message box on the screen
-                        print("Display message - choose a tile to move")
-                        return False
-                self.__turnBoardToTwoDim()
-                #Get row and column from BoardPosition
-                oldrow = int(oldPos/BOARDSIZE)
-                oldcol = oldPos%BOARDSIZE
-                newrow = int(newPos/BOARDSIZE)
-                newcol = newPos%BOARDSIZE
-
-                #possible new positions
-                #oldrow-1, oldcol. Position = (oldrow-1)*BOARDSIZE+col
-                #oldrow+1, oldcol. Position = (oldrow+1)*BOARDSIZE+col
-                #oldrow, oldcol-1. Position = oldrow*BOARDSIZE+(col-1)
-                #oldrow, oldcol+1. Position = oldrow*BOARDSIZE+(col+1)
-
-                print("possible pos = {} and newPos = {}".format(((oldrow-1)*BOARDSIZE+oldcol), newPos))
-                print("possible pos = {} and newPos = {}".format(((oldrow+1)*BOARDSIZE+oldcol), newPos))
-                print("possible pos = {} and newPos = {}".format((oldrow*BOARDSIZE+(oldcol-1)), newPos))
-                print("possible pos = {} and newPos = {}".format((oldrow*BOARDSIZE+(oldcol+1)), newPos))
-                #range(0,11) gives 0-10
-                if( ( ((oldrow-1)*BOARDSIZE+oldcol) in range(0,len(self.board))) and (newPos == ((oldrow-1)*BOARDSIZE+oldcol)) ):
-                        print("returning is a valid move")
-                        return True
-                elif( ( ((oldrow+1)*BOARDSIZE+oldcol) in range(0,len(self.board))) and (newPos == ((oldrow+1)*BOARDSIZE+oldcol)) ):
-                        print("returning is a valid move")
-                        return True
-                elif( ((oldrow*BOARDSIZE+(oldcol-1)) in range(0,len(self.board))) and (newPos == (oldrow*BOARDSIZE+(oldcol-1)))):
-                        print("returning is a valid move")
-                        return True
-                elif( ((oldrow*BOARDSIZE+(oldcol+1)) in range(0,len(self.board))) and (newPos == (oldrow*BOARDSIZE+(oldcol+1))) ):
-                        print("returning is a valid move")
-                        return True
-                else:
-                        print("returning is not a valid move")
-                        return False
-                
-
-        def __checkIfEmpty(self, oldPos, newPos):
-                #not one of the 9 grids
-                if((newPos == None) or (oldPos == None)):
-                        return False
-                print("board value to position newPos = {}".format(self.board[newPos]))
-                #If moving to an empty position
-                if(self.board[newPos] == 0):
-                        return True
-                return False
-
-        def __checkIfValidJoinTiles(self, oldPos, newPos):
-                #Check if all are 10's and draw a new tile
-                #Let 10's move around but and slide into
-                
-                #not one of the 9 grids
-                if((newPos == None) or (oldPos == None)):
-                        return False
-                print("board value to position newPos = {}".format(self.board[oldPos]+self.board[newPos]))
-                if((self.board[oldPos]+self.board[newPos]) > 10):
-                        #Erroneus move - do nothing
-                        return False
-                elif((self.board[oldPos]+self.board[newPos]) == 10):
-                        print("10 done")
-                        #change the board and re-draw the tile
-                        #TODO: make it non clickable
-                        return True
-                        
-                #If moving to a valid positon < 10
-                else:
-                        print("Valid less than 10")
-                        #Redraw the tile to new value
-                        #change the board and maintain a new board perhaps?
-                        return True
-                return False
-
-        def __checkifGameOver(self):
-                for i in range(0, len(self.board)):
-                        if((self.board[i] != 10) and (self.board[i] != 0)):
-                                return False
-                return True
-        
-        def __checkIfEmptyAndMove(self, oldPos, newPos):
-                #Algorithm
-                #check if valid move - make it simple - only one cell allowed
-                #check if empty - move if empty
-                #if not empty add and make it 10 or show error and stay at the same place
-                if(self.__checkIfValidMove(oldPos, newPos)):
-                        print("Valid move")
-                        if(self.__checkIfEmpty(oldPos, newPos)):
-                                self.board[newPos] = self.board[oldPos]
-                                #empty it
-                                self.board[oldPos] = 0
-                                self.__slideInto(oldPos, newPos, self.board[newPos])
-                        else:
-                                #Add board positions
-                                if(self.__checkIfValidJoinTiles(oldPos, newPos)):
-                                        
-                                        self.board[newPos] = self.board[oldPos]+self.board[newPos]
-                                        self.board[oldPos] = 0
-                                        #empty it
-                                        self.board[oldPos] = 0
-                                        self.__slideInto(oldPos, newPos, self.board[newPos])
-                                        #Extra time for the user to realise combinations are done
-                                        clock = pygame.time.Clock()
-                                        clock.tick(10)
-                                        print("Checking if game is over")
-                                        print("Board = {}".format(self.board))
-                                        if(self.__checkifGameOver()):
-                                                #draw board again
-                                                #self.board = self.__getStartingBoardDS()
-                                                #print(self.board)
-                                                #Print message woth ok
-                                                #Erase previous tile
-                                                #Don't draw here
-                                                #self.__drawBoard(self.board, "")
-                                                
-                                                print("Game over. Continue?")
-                                                return True
-                                        else:
-                                                return False
-                                                print("Game is not over")
-                                else:
-                                        #do nothing
-                                        #ToDO: probably show a message and stay at the same place
-                                        return False
-                else:
-                        print("Coming in not a valid move's else")
-                        #TODO: Display error message and stay at same place
-                        return False
-                        
-            
-
-        def __getSpotClicked(self, board, x, y):
-                #From pixel coordinates, get where on the board it is
-                for i in range(len(board)):
-                        #unpack the tuple
-                        left, top = self.__getPixelCoordinates(i)
-                        #Add the offset for get position in the inner screen
-                        tileRect =  pygame.Rect(left+COORDX, top+COORDY, TILEWIDTH, TILEHEIGHT)
-                        print("Tile object = {}".format(tileRect))
-                        if tileRect.collidepoint(x,y):
-                                #If collides, get the tile number
-                                if(i in range(0, len(board))):
-                                        return i
-                                else:
-                                        print("should it ever come here?")
-                        else:
-                                #if not inside the game tile it comes here
-                                print("Continuing the loop")
-                                continue
-
-
-        def __checkForQuit(self):
-                """
-                Checking for quit event, from the close button
-                """
-                #Same as passing a parameter
-                ##    for event in pygame.event.get():
-                ##    if event.type == pygame.QUIT:
-
-                for event in pygame.event.get(pygame.QUIT):
-                        terminate()
-
-        #Given a text make a surface and rectangle and display
         def __makeText(self, text, color, bgcolor, top, left):
                 """
                 Surface and Rect objects for positioning any text on the screen,
@@ -409,113 +96,123 @@ class Controller:
                 textSurf = BASICFONT.render(text, True, color, bgcolor)
                 textRect = textSurf.get_rect()
                 textRect.topleft = (top, left)
-                
                 return (textSurf, textRect)
 
+        def __getPixelCoordinates(self, n):
+                """
+                Given the position in the board's 1 dimensional array gives the position
+                in x,y coordinated for the top-left point in the tile
+
+                Returns the coordinates
+                """
+                #say for board[n]
+                #n/3 gives row and column is n%3
+                #each tile is 150*150
+                #left = x =150*column
+                #top = y = 150*row
+                left = XMARGIN + TILEWIDTH*(n%ROWCOLMAX)
+                #Imagine not typecasting here, gives different values
+                top = YMARGIN + TILEHEIGHT*int(n/ROWCOLMAX)
+                return (left, top)
+
+        def __drawTile(self, tilex, tiley, adjx, adjy, tileNumber):
+                """
+                Draw the tiles with random numbers that mix to form 10
+                1.Erase the tile (last param=0) - Make the tile the game(inner) board's color
+                2.Subtraction of X,Y margins for spacing between tiles
+                3.Else draw the tiles with the text within it
+                """
+                #Erase
+                if(tileNumber == 0):
+                        #print("Erase the tile")
+                        #NOBORDER means fill it up completely
+                        pygame.draw.rect(SCREEN, GAMEBOARDCOLOR, (tilex+adjx, tiley+adjy, TILEWIDTH-XMARGIN, TILEHEIGHT-YMARGIN), NOBORDER)
+                else:
+                        pygame.draw.rect(SCREEN, TILECOLOR, (tilex+adjx, tiley+adjy, TILEWIDTH-XMARGIN, TILEHEIGHT-YMARGIN), NOBORDER)
+                        #Render images here later with the random number
+                        textSurf = BASICFONT.render(str(tileNumber), True, TEXTCOLOR)
+                        textRect = textSurf.get_rect()
+                        textRect.center = tilex + int(TILEWIDTH/2) + adjx, tiley + int(TILEHEIGHT/2) + adjy
+                        SCREEN.blit(textSurf, textRect)
+                return
+        
         #Controller for drawing tiles
         def __drawBoard(self, board, message, reDraw):
                 """
                 Draw the board with tiles for a given filled single dimensional array-board
 
-                Message - if exists means you can display the message in a corner
+                1.Message - if exists means game is over and the game board screen is black with red text
+                2.For each of the tiles, if redraw situation-redraw
+                3.For each of the tiles if fresh game, draw the tiles, in which board position has a number(!=0)
                 """
+                #The gameover rect will be used in event handling           
                 global MSGTEXTSURF, MSGTEXTRECT
                 if message:
-                        print("Drawing game over = {}".format(message))
+                        #print("Drawing game over = {}".format(message))
                         pygame.draw.rect(SCREEN, BLACK, GAMEBOARDCOORD, 0)
                         MSGTEXTSURF, MSGTEXTRECT = self.__makeText(message, RED, BLACK, 125, 325)
                         SCREEN.blit(MSGTEXTSURF, MSGTEXTRECT)
-                        #Time the clock and redraw new combination of tiles where you re-start
-                        #clock = pygame.time.Clock()
-                        #clock.tick(200)
                         return
-                #There was no else here and for was inside the if, for should be next to drawBoard
-                #without the else
                 else:
                         for i in range(len(board)):
-                                #+100 because i have left a 100 gap at the top
-                                #First time erase not required
-                                #Erase old tile for a new game situation
                                 (left, top) = self.__getPixelCoordinates(i)
-                                print(left, top)
-                                #Erase the position you are drawing into, only if you are re-drawing
-                                #saving effort, if re-drawing erase all of the board
-                                #BUG: Game over situation - 10 present in position x in the old game
-                                #new game that position is empty
+                                #print(left, top)
+                                #if re-drawing erase all of the board-new game situation
                                 if(reDraw):
-                                        print("Erasing old tile")
+                                        #print("Erasing old tile")
                                         #BUG resolved:Passing 0 for draw tile to erase
                                         self.__drawTile(left, top, COORDX, COORDY, 0)
-                                        
                                 if(board[i] != 0):
                                         #Drawing the new board position
                                         self.__drawTile(left, top, COORDX, COORDY, board[i])
                                 else:
                                         continue
                         
-
         def __nestedListstoList(self, nestedListOfPairs):
                 """
                 Convert nested list to a single dim list
+                Only used by __getStartingBoardDS to get the logic for pairs of combinations
                 """
-                print("Nested list of pairs = {}".format(nestedListOfPairs))
+                #print("Nested list of pairs = {}".format(nestedListOfPairs))
                 singleList = [0]*(len(nestedListOfPairs)*PAIRSIZE)
                 listiter = 0
-                print(singleList)
+                #print(singleList)
                 for row in range(len(nestedListOfPairs)):
                         for col in range(PAIRSIZE):
-                                print("lisiter = {}, row = {}. col = {}".format(listiter, row, col))
+                                #print("lisiter = {}, row = {}. col = {}".format(listiter, row, col))
                                 singleList[listiter] = nestedListOfPairs[row][col]
                                 listiter = listiter + 1
-                print("populated single = {}".format(singleList))
+                #print("populated single = {}".format(singleList))
                 return singleList
-        #Usage: print(getStartingBoardDS.__doc__)
-        #import sample
-        #help(sample)
+        
         def __getStartingBoardDS(self):
                 """Data structure for poupulating the board initially with random tiles and
                 combination of random numbers
 
                 Returns the data structure
-
-                Right now hardcoded to a combination of 4 tiles with 2 5's
                 """
-                #Algorithm: Start with 2 numbers any of COMB1 - COMB5
-                #When all are 10, take 4, pick 2 of COMB1-COMB5
-                #Next level pick 6, 3 of all
-                #Next level pick 8, 4 of all
-                #OR in random 2,4,6,8 of all 5 
+                #Algorithm: 
+                #Randomly pick 2,4,6,8 of all 5 combinations
                 
                 #starting state
                 #generate combinations of 10 in random
                 #populate random positions max leave one square free
-                #Decide algo for split and what combinations of split
-
-                #For now choose [5] 4 times - will get 2 10's
-
+                
                 board = [0]*(BOARDSIZE*BOARDSIZE)
                 #print(board)
                 #tilesoccupied should never increae 8
                 tilesoccupied = 0
-                #Hard code for now
-                #4 5'sfor 2 10's
 
-                #index in the 1-dimensional array
-                #not unique
-                #random.randint(0, 8)
-                #Second parameter chooses 4 items
-
-                #Since we have items in pairs
+                #Since we have items in pairs - gives 1/2/3/4 - a pair
                 noOfPairs = random.randrange(1, int(len(board)/2))
                 #sample 1st param = population, set of 5
                 #2nd param = k set of items
+                #2,4,6,8 tiles to occupy based on noOfPairs
                 tiletooccupy = random.sample([COMB1, COMB2, COMB3, COMB4, COMB5], noOfPairs)
-                #print("Sample of 4 fives = {}".format(tiletooccupy))
-                #Set all the 4 random positions to 5
-
+                
                 #now i need a random sample of board positions
                 tilesOccupied =  noOfPairs*PAIRSIZE
-                print("Tiles occupied = {}".format(tilesOccupied))
+                #print("Tiles occupied = {}".format(tilesOccupied))
                 #Turn list of lists to a list of integers
                 boardlist = self.__nestedListstoList(tiletooccupy)
                 #returns a number from 1 to tilesOccupied (2/4/6/8)
@@ -530,65 +227,349 @@ class Controller:
                         board[boardposition] = boardlist[i]
                         tilesoccupied += 1
 
-######                for i in range(tilesOccupied):
-######                        board[tiletooccupy[i]] = 5
-######                        tilesoccupied += 1
-
-                print(tilesoccupied)
-                print(board)
-                #If there is one more tab here - return will go inside the for and return
-                #after 1 5 itself
+                #print(tilesoccupied)
+                #print(board)
                 return board
-
-
-
-        #Now turn board positions to pixel positions
-        #returns the coordinated of the starting point - left,top
-
-        #say for board[n]
-        #n/3 gives row and column is n%3
-        #each tile is 150*150
-        #left = x =150*column
-        #top = y = 150*row
-        def __getPixelCoordinates(self, n):
+        
+        def __init__(self):
                 """
-                Given the position in the board's 1 dimensional array gives the position
-                in x,y coordinated for the top-left point in the tile
+                Constructor:
+                1.Intializes pygame
+                2.Sets caption and font
+                3.Global SCREEN object
+                4.Sets screen color
+                5.Draw game board
+                6.Get the board data structure
+                7.Draw tiles
+                8.Play sound
+                """
+                global SCREEN, BASICFONT
+                #Pygame initiation
+                os.environ["SDL_VIDEO_CENTERED"] = "1"
+                pygame.init()
+                #Get the font
+                BASICFONT = pygame.font.Font('freesansbold.ttf', BASICFONTSIZE)
+                #set up display
+                pygame.display.set_caption("Junior 10")
+                #Screen to draw on
+                SCREEN = pygame.display.set_mode(SCREENSIZE)
 
-                Returns the coordinates
-                """
-                left = XMARGIN + TILEWIDTH*(n%ROWCOLMAX)
-                #Imagine not typecasting here, gives different values
-                top = YMARGIN + TILEHEIGHT*int(n/ROWCOLMAX)
-                return (left, top)
+                #r,g,b
+                SCREEN.fill(SCREENCOLOR)
 
-        #Draw the tile
-        def __drawTile(self, tilex, tiley, adjx, adjy, tileNumber):
+                #last parameter if 0, the rectangle is filled
+                #(x,y,width,height) is a Python tuple
+                #x,y are the coordinates of the upper left hand corner
+                #width, height are the width and height of the rectangle
+                pygame.draw.rect(SCREEN, GAMEBOARDCOLOR, GAMEBOARDCOORD, 0)
+
+                #inner rectangle is x = 420,y = 400 - divide the square into 9 pieces
+                #450/3 = 150
+                #450/3 = 150
+                #draw the board
+                self.board = self.__getStartingBoardDS()
+                #print(self.board)
+                reDraw = False
+                self.__drawBoard(self.board, "", reDraw)
+                #Play sound
+                #http://www.nerdparadise.com/programming/pygame/part3
+                pygame.mixer.music.load('background.mp3')
+                #Play once
+                #pygame.mixer.music.play(0)
+                #Play infinitely
+                pygame.mixer.music.play(-1)
+                
+        def control(self):
                 """
-                Draw the tiles with random numbers that mix to form 10
+                1.Main game loop - a big while to check for quit
+                2.For loop to receive events
+                3.Check for quit all the time, the 
+                4.For loop looking for specific quit event is in __checkForQuit
+                5.Mouse up and game is over - black screen case
+                6.   Get a new DS, redraw the board(erase all and redraw), new game starts
+                7.Mouse up but post a movement of a tile
+                8.   If game is over, repeat game over routine
+                     Display game over message
+                9.If move - get the tile clicked, if button down due to game over
+                     replay the background music
+                10.Update the screen
                 """
-                #Erase
-                if(tileNumber == 0):
-                        print("Erase the tile")
-                        #NOBORDER means fill it up completely
-                        pygame.draw.rect(SCREEN, GAMEBOARDCOLOR, (tilex+adjx, tiley+adjy, TILEWIDTH-XMARGIN, TILEHEIGHT-YMARGIN), NOBORDER)
-                        #Render images here later with the random number
-                        #textSurf = BASICFONT.render("", True, TEXTCOLOR)
-                        #textRect = textSurf.get_rect()
-                        #textRect.center = tilex + int(TILEWIDTH/2) + adjx, tiley + int(TILEHEIGHT/2) + adjy
-                        #SCREEN.blit(textSurf, textRect)
-                else:
-                        pygame.draw.rect(SCREEN, TILECOLOR, (tilex+adjx, tiley+adjy, TILEWIDTH-XMARGIN, TILEHEIGHT-YMARGIN), NOBORDER)
-                        #Render images here later with the random number
-                        textSurf = BASICFONT.render(str(tileNumber), True, TEXTCOLOR)
-                        textRect = textSurf.get_rect()
-                        textRect.center = tilex + int(TILEWIDTH/2) + adjx, tiley + int(TILEHEIGHT/2) + adjy
-                        SCREEN.blit(textSurf, textRect)
+                running = True
+                clickedTile = -1
+                movedToTile = -1
+                gameOver = False
+                while running:
+                        self.__checkForQuit()
+                        for event in pygame.event.get():
+                                if(event.type == pygame.MOUSEBUTTONUP and gameOver==True):
+                                        #print("tuple = {}".format(event.pos))
+                                        x,y = event.pos
+                                        #print("x ={}, y ={}".format(x,y))
+                                        
+                                        if(MSGTEXTRECT.collidepoint(x,y)):
+                                                self.board = self.__getStartingBoardDS()
+                                                #print(self.board)
+                                                #print("Board = {}".format(self.board))
+                                                pygame.draw.rect(SCREEN, GAMEBOARDCOLOR, GAMEBOARDCOORD, 0)
+                                                #Pass another parameter to know it is re-drawing, to save effort of erasing
+                                                reDraw = True
+                                                self.__drawBoard(self.board, "", reDraw)
+                                                #New game
+                                                gameOver = False
+                                elif(event.type == pygame.MOUSEBUTTONUP and pygame.MOUSEMOTION and pygame.MOUSEBUTTONDOWN):
+                                        #unpack the tuple
+                                        #print("tuple = {}".format(event.pos))
+                                        x,y = event.pos
+                                        #print("x ={}, y ={}".format(x,y))
+                                        movedToTile = self.__getSpotClicked(self.board, x, y)
+                                        #print("Moved to tile = {}".format(movedToTile))
+                                        gameOver = self.__checkIfEmptyAndMove(clickedTile, movedToTile)
+                                        if(gameOver):
+                                                pygame.mixer.music.stop()
+                                                pygame.mixer.music.load('gameover.mp3')
+                                                pygame.mixer.music.play(0)
+                                                #TODO:display game over message
+                                                reDraw = False
+                                                self.__drawBoard(self.board, "Game Over. Continue?", reDraw)
+                                elif(event.type ==  pygame.MOUSEBUTTONDOWN):
+                                        if(gameOver):
+                                                pygame.mixer.music.stop()
+                                                pygame.mixer.music.load('background.mp3')
+                                                pygame.mixer.music.play(-1)
+                                        #set a boolean flag as to it was pressed and get the cell in which it happened
+                                        x,y = event.pos
+                                        #print("x ={}, y ={}".format(x,y))
+                                        clickedTile = self.__getSpotClicked(self.board, x, y)
+                                        #print("Clicked tile = {}".format(clickedTile))
+                                        
+                                #Update the screen
+                                pygame.display.update()
+                                
+
+        def __slideInto(self, oldPos, newPos, newNumber):
+                """
+                1.From DS positions get the top left pixel coordinates for old and new tiles
+                2.Erase positions of old and new tiles
+                3.Draw the tile with the new number
+                """
+                (leftold, topold) = self.__getPixelCoordinates(oldPos)
+                (left, top) = self.__getPixelCoordinates(newPos)
+                #print("Erase coordinates {}".format(leftold, topold))
+                #print("Slide into coordinates {}".format(left, top))
+                
+                #Erase old and erase where you slide into as well
+                #print("Erasing old tile")
+                self.__drawTile(leftold, topold, COORDX, COORDY, 0)
+                #print("Erasing where you are sliding into")
+                self.__drawTile(left, top, COORDX, COORDY, 0)
+                #print("redrawing with new value")
+                self.__drawTile(left, top, COORDX, COORDY, newNumber)
+                #print("Done")
                 return
+        
+        def __turnBoardToTwoDim(self):
+                """
+                Convert single Dim DS to 2D DS just to check NEWS positions
+                """
+                for row in range(BOARDSIZE):
+                        for col in range(BOARDSIZE):
+                                self.twoDimBoard[row][col] = self.board[row*BOARDSIZE+col]
+                return
+        
+        def __checkIfValidMove(self, oldPos, newPos):
+                """
+                1.None of the tiles chosen - false
+                2.Empty tile chosen to move - false
+                3.Re-create board positions in row,column format
+                4.Check valid NORTH, EAST, SOUTH,WEST positions for the newPos, invalid ones rejected
+                5.Only one move allowed, like the King in chess, if valid return true
+                """
+                #print("oldPos = {} , newPos = {}".format(oldPos, newPos))
+                #not one of the 9 grids
+                if((newPos == None) or (oldPos == None)):
+                        return False
+                #print("board value at position oldPos = {}".format(self.board[oldPos]))
+                #If moving from an empty position
+                if(self.board[oldPos] == 0):
+                        #print("Display message - choose a tile to move")
+                        return False
+                self.__turnBoardToTwoDim()
+                #Get row and column from BoardPosition
+                oldrow = int(oldPos/BOARDSIZE)
+                oldcol = oldPos%BOARDSIZE
+                newrow = int(newPos/BOARDSIZE)
+                newcol = newPos%BOARDSIZE
+
+                #possible new positions
+                #oldrow-1, oldcol. Position = (oldrow-1)*BOARDSIZE+col
+                #oldrow+1, oldcol. Position = (oldrow+1)*BOARDSIZE+col
+                #oldrow, oldcol-1. Position = oldrow*BOARDSIZE+(col-1)
+                #oldrow, oldcol+1. Position = oldrow*BOARDSIZE+(col+1)
+
+                #print("possible pos = {} and newPos = {}".format(((oldrow-1)*BOARDSIZE+oldcol), newPos))
+                #print("possible pos = {} and newPos = {}".format(((oldrow+1)*BOARDSIZE+oldcol), newPos))
+                #print("possible pos = {} and newPos = {}".format((oldrow*BOARDSIZE+(oldcol-1)), newPos))
+                #print("possible pos = {} and newPos = {}".format((oldrow*BOARDSIZE+(oldcol+1)), newPos))
+                #range(0,11) gives 0-10
+                if( ( ((oldrow-1)*BOARDSIZE+oldcol) in range(0,len(self.board))) and (newPos == ((oldrow-1)*BOARDSIZE+oldcol)) ):
+                        #print("returning is a valid move")
+                        return True
+                elif( ( ((oldrow+1)*BOARDSIZE+oldcol) in range(0,len(self.board))) and (newPos == ((oldrow+1)*BOARDSIZE+oldcol)) ):
+                        #print("returning is a valid move")
+                        return True
+                elif( ((oldrow*BOARDSIZE+(oldcol-1)) in range(0,len(self.board))) and (newPos == (oldrow*BOARDSIZE+(oldcol-1)))):
+                        #print("returning is a valid move")
+                        return True
+                elif( ((oldrow*BOARDSIZE+(oldcol+1)) in range(0,len(self.board))) and (newPos == (oldrow*BOARDSIZE+(oldcol+1))) ):
+                        #print("returning is a valid move")
+                        return True
+                else:
+                        #print("returning is not a valid move")
+                        return False
+                
+
+        def __checkIfEmpty(self, oldPos, newPos):
+                """
+                1.Moving positions are invalid, return false
+                2.If newPos-tile moving into is empty, return True
+                """
+                #not one of the 9 grids
+                if((newPos == None) or (oldPos == None)):
+                        return False
+                #print("board value to position newPos = {}".format(self.board[newPos]))
+                #If moving to an empty position
+                if(self.board[newPos] == 0):
+                        return True
+                return False
+
+        def __checkIfValidJoinTiles(self, oldPos, newPos):
+                """
+                1.If clicks are invalid, return false
+                2.If sum of tiles more than 10, return false
+                3.If 10 return true
+                4.If <10 return true
+                """
+                if((newPos == None) or (oldPos == None)):
+                        return False
+                print("board value to position newPos = {}".format(self.board[oldPos]+self.board[newPos]))
+                if((self.board[oldPos]+self.board[newPos]) > 10):
+                        #Erroneus move - do nothing
+                        return False
+                elif((self.board[oldPos]+self.board[newPos]) == 10):
+                        #print("10 done")
+                        return True
+                else:
+                        #print("Valid less than 10")
+                        return True
+                return False
+
+        def __checkifGameOver(self):
+                """
+                For all board positions, if board positions anything other than 0 or 10
+                -game is not over
+                -Find all 10's and all 0's then game is over
+                """
+                for i in range(0, len(self.board)):
+                        if((self.board[i] != 10) and (self.board[i] != 0)):
+                                return False
+                return True
+        
+        def __checkIfEmptyAndMove(self, oldPos, newPos):
+                """Algorithm
+                1.Check if valid move - make it simple - only one cell allowed
+                2.Check if empty - move if empty
+                3.If not empty add and check move is valid, if not ignore
+                4.If valid, check if it is 10, return True
+                5.If valid, check if not 10 return False
+                """
+                if(self.__checkIfValidMove(oldPos, newPos)):
+                        #print("Valid move")
+                        if(self.__checkIfEmpty(oldPos, newPos)):
+                                self.board[newPos] = self.board[oldPos]
+                                #empty it
+                                self.board[oldPos] = 0
+                                self.__slideInto(oldPos, newPos, self.board[newPos])
+                        else:
+                                #Add board positions
+                                if(self.__checkIfValidJoinTiles(oldPos, newPos)):
+                                        self.board[newPos] = self.board[oldPos]+self.board[newPos]
+                                        self.board[oldPos] = 0
+                                        #empty it
+                                        self.board[oldPos] = 0
+                                        self.__slideInto(oldPos, newPos, self.board[newPos])
+                                        #print("Checking if game is over")
+                                        #print("Board = {}".format(self.board))
+                                        if(self.__checkifGameOver()):
+                                                #print("Game over. Continue?")
+                                                return True
+                                        else:
+                                                return False
+                                                #print("Game is not over")
+                                else:
+                                        #do nothing
+                                        #ToDO: probably show a message and stay at the same place
+                                        return False
+                else:
+                        #print("Coming in not a valid move's else")
+                        return False
+                        
+            
+
+        def __getSpotClicked(self, board, x, y):
+                """
+                From the mouse click pixel coordinates, get where on the board data structure it is
+                1.For each tile going through the board DS get the pixel coordinates
+                2.Form a rect with those coordinates
+                3.If that collides with the points received while clicking, match is found
+                4.Clicks not on one of the game tiles, ignore
+                """
+                for i in range(len(board)):
+                        #unpack the tuple
+                        left, top = self.__getPixelCoordinates(i)
+                        #Add the offset for get position in the inner screen
+                        tileRect =  pygame.Rect(left+COORDX, top+COORDY, TILEWIDTH, TILEHEIGHT)
+                        #print("Tile object = {}".format(tileRect))
+                        if tileRect.collidepoint(x,y):
+                                #If collides, get the tile number
+                                if(i in range(0, len(board))):
+                                        return i
+                                #else:
+                                #        print("should it ever come here?")
+                        else:
+                                #if not inside the game tile it comes here
+                                #print("Continuing the loop")
+                                continue
 
 
+        def __checkForQuit(self):
+                """
+                Checking for quit event, from the close button
+                """
+                #Same as passing a parameter
+                ##    for event in pygame.event.get():
+                ##    if event.type == pygame.QUIT:
+                for event in pygame.event.get(pygame.QUIT):
+                        terminate()
+
+        
+
+#Called from main, hence outside the class
+def terminate():
+        """
+        Terminate the game and the shell
+        """
+        pygame.quit()
+        #This is required. If you comment this and you click quit it will give
+        #an error saying pygame is not initializd but am still trying to update
+        #on the next line
+        #if we add this, the shell will exit for the current code and the error
+        #will not be seen
+        sys.exit()
 
 def main():
+        """
+        Instantiates controller object and calls control which has the event loop
+        """
         try:
                 #Do initialization once
                 controller =  Controller()
@@ -598,5 +579,6 @@ def main():
         except SystemExit:
                 terminate()
 
+#Decide if it can be run from the library or only from main - only from main
 if __name__ == "__main__":
     main()
