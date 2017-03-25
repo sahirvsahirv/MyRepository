@@ -127,7 +127,7 @@ class Controller:
                 self.__drawBoard(self.board, "", reDraw)
                 #Play sound
                 #http://www.nerdparadise.com/programming/pygame/part3
-                pygame.mixer.music.load('flop120.mp3')
+                pygame.mixer.music.load('background.mp3')
                 #Play once
                 #pygame.mixer.music.play(0)
                 #Play infinitely
@@ -183,7 +183,7 @@ class Controller:
                                         gameOver = self.__checkIfEmptyAndMove(clickedTile, movedToTile)
                                         if(gameOver):
                                                 pygame.mixer.music.stop()
-                                                pygame.mixer.music.load('crazyscale120.mp3')
+                                                pygame.mixer.music.load('gameover.mp3')
                                                 pygame.mixer.music.play(0)
                                                 #TODO:display game over message
                                                 reDraw = False
@@ -191,7 +191,7 @@ class Controller:
                                 elif(event.type ==  pygame.MOUSEBUTTONDOWN):
                                         print("Clicking game over")
                                         pygame.mixer.music.stop()
-                                        pygame.mixer.music.load('flop120.mp3')
+                                        pygame.mixer.music.load('background.mp3')
                                         pygame.mixer.music.play(-1)
                                         #set a boolean flag as to it was pressed and get the cell in which it happened
                                         x,y = event.pos
