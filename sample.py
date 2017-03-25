@@ -14,6 +14,8 @@ import pygame.time
 
 #TODO: Wrong combination case where all are not 10's and all combinations are more than 10
 #Just give an option of new game
+#http://www.soundjig.com/pages/soundfx/beeps.html
+
 
 #Constants
 RED = (255, 0 , 0)
@@ -123,7 +125,16 @@ class Controller:
                 print(self.board)
                 reDraw = False
                 self.__drawBoard(self.board, "", reDraw)
-
+                #Play sound
+                #http://www.nerdparadise.com/programming/pygame/part3
+                pygame.mixer.music.load('flop120.mp3')
+                #Play once
+                #pygame.mixer.music.play(0)
+                #Play infinitely
+                pygame.mixer.music.play(-1)
+                
+                
+                
         def control(self):
                 running = True
                 #making them outside the scope of the if conditions and giving it scope inside the
@@ -171,11 +182,17 @@ class Controller:
                                         ##return
                                         gameOver = self.__checkIfEmptyAndMove(clickedTile, movedToTile)
                                         if(gameOver):
+                                                pygame.mixer.music.stop()
+                                                pygame.mixer.music.load('crazyscale120.mp3')
+                                                pygame.mixer.music.play(0)
                                                 #TODO:display game over message
                                                 reDraw = False
                                                 self.__drawBoard(self.board, "Game Over. Continue?", reDraw)
                                 elif(event.type ==  pygame.MOUSEBUTTONDOWN):
                                         print("Clicking game over")
+                                        pygame.mixer.music.stop()
+                                        pygame.mixer.music.load('flop120.mp3')
+                                        pygame.mixer.music.play(-1)
                                         #set a boolean flag as to it was pressed and get the cell in which it happened
                                         x,y = event.pos
                                         print("x ={}, y ={}".format(x,y))
