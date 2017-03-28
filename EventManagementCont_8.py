@@ -9,8 +9,9 @@ New concepts-
 5. Game winning situation - redraw screen and new data structure
 6. Realise the need of OOP while passing around the board and revealedBoxes everywhere
 7. Sound effects
+    
+8. Home work - Do the game over condition - and display new DS and fresh flipped tiles
     Create another function for handling the screen along with game over screen
-8. Home work - Do the game over screen
 9. Day 5 - Flip the tiles post showing once - flip and hide
 
 """
